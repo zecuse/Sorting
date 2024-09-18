@@ -82,7 +82,7 @@ void selectSort(vector<int> &vals)
 int main()
 {
 	bool shortInfo = true;
-	int size = 1000, min = -100, max = 100;
+	int size = 1000, min = -10000, max = 10000;
 	vector<int> vals{};
 	Utilities::Create(vals, size, min, max);
 	char cont = 'y';

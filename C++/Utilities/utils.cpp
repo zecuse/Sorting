@@ -18,19 +18,63 @@ void Utilities::Print(vector<int> &vals)
 	cout << print << endl;
 }
 
-void Utilities::Create(vector<int> &vals, int size, int min, int max)
+void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape start, Traits traits)
 {
 	random_device dev{};
-	default_random_engine rng{dev()};
-	uniform_int_distribution dist{min, max};
-	while (size-- > 0)
-		vals.push_back(dist(rng));
+	default_random_engine rng{ dev() };
+	uniform_int_distribution dist{ min, max };
+
+	switch (start)
+	{
+	case StartShape::Random:
+		while (size-- > 0)
+			vals.push_back(dist(rng));
+		break;
+	case StartShape::Sorted:
+		int ins = min;
+		while (size-- > 0)
+		{
+			if (dist(rng) % 4 == 0)
+				ins = ins == max ? max : ins + 1;
+			vals.push_back(ins);
+		}
+		break;
+	case StartShape::Triangle:
+		int odd = size % 2, ins = min, range = max - min;
+		while (vals.size() <= size / 2)
+		{
+			if (dist(rng) % 3 == 0)
+				ins = ins == max ? max : ins + (dist(rng) % (range / 10));
+			vals.push_back(ins);
+		}
+		size += odd;
+		size /= 2;
+		while (size-- > 0)
+		{
+			if (dist(rng) % 3 == 0)
+				ins = ins == min ? min : ins - (dist(rng) % (range / 10));
+			vals.push_back(ins);
+		}
+		break;
+	case StartShape::Jagged:
+		int jags = 10, range = max - min;
+		while (size > 0)
+		{
+			int ins = min + (dist(rng) % (range / 10));
+			for (int i = 0; size > 0 && i < size / jags; ++i, --size)
+			{
+				vals.push_back(ins);
+				ins = ins == max ? max : ins + dist(rng) % (range / 20);
+			}
+		}
+		break;
+	}
 }
 
 void Utilities::Shuffle(vector<int> &vals)
 {
 	random_device dev{};
-	default_random_engine rng{dev()};
+	default_random_engine rng{ dev() };
 	shuffle(vals.begin(), vals.end(), rng);
 }
 
