@@ -1,6 +1,7 @@
 #include <Utilities/utils.hpp>
 
 #include <algorithm>
+#include <format>
 #include <iostream>
 #include <numeric>
 #include <random>
@@ -12,18 +13,20 @@ void Utilities::Print(vector<int> &vals)
 {
 	auto fold = [](string res, int val)
 	{
-		return move(res) + ", " + to_string(val);
+		return move(res) + ", " + format("{: 5d}", val);
 	};
-	string print = accumulate(next(vals.begin()), vals.end(), to_string(vals[0]), fold);
+	string print = accumulate(next(vals.begin()), vals.end(), format("{: 5d}", vals[0]), fold);
 	cout << print << endl;
 }
 
-void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape start, Traits traits)
+void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape start, int traits)
 {
 	random_device dev{};
 	default_random_engine rng{ dev() };
 	uniform_int_distribution dist{ min, max };
+	int ins, odd, jags, range;
 
+	vals.clear();
 	switch (start)
 	{
 	case StartShape::Random:
@@ -31,7 +34,7 @@ void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape
 			vals.push_back(dist(rng));
 		break;
 	case StartShape::Sorted:
-		int ins = min;
+		ins = min;
 		while (size-- > 0)
 		{
 			if (dist(rng) % 4 == 0)
@@ -40,7 +43,9 @@ void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape
 		}
 		break;
 	case StartShape::Triangle:
-		int odd = size % 2, ins = min, range = max - min;
+		odd = size % 2;
+		ins = min;
+		range = max - min;
 		while (vals.size() <= size / 2)
 		{
 			if (dist(rng) % 3 == 0)
@@ -57,10 +62,11 @@ void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape
 		}
 		break;
 	case StartShape::Jagged:
-		int jags = 10, range = max - min;
+		jags = 10;
+		range = max - min;
 		while (size > 0)
 		{
-			int ins = min + (dist(rng) % (range / 10));
+			ins = min + (dist(rng) % (range / 10));
 			for (int i = 0; size > 0 && i < size / jags; ++i, --size)
 			{
 				vals.push_back(ins);
