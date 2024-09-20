@@ -24,7 +24,8 @@ void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape
 	random_device dev{};
 	default_random_engine rng{ dev() };
 	uniform_int_distribution dist{ min, max };
-	int ins, odd, jags, range;
+	uniform_int_distribution smallDist{ 5, 50 };
+	int ins, odd, cnt;
 
 	vals.clear();
 	switch (start)
@@ -34,43 +35,42 @@ void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape
 			vals.push_back(dist(rng));
 		break;
 	case StartShape::Sorted:
-		ins = min;
+		ins = min + smallDist(rng);
 		while (size-- > 0)
 		{
-			if (dist(rng) % 4 == 0)
-				ins = ins == max ? max : ins + 1;
 			vals.push_back(ins);
+			ins += smallDist(rng);
+			ins = ins > max ? max : ins;
 		}
 		break;
 	case StartShape::Triangle:
 		odd = size % 2;
-		ins = min;
-		range = max - min;
+		ins = min + smallDist(rng);
 		while (vals.size() <= size / 2)
 		{
-			if (dist(rng) % 3 == 0)
-				ins = ins == max ? max : ins + (dist(rng) % (range / 10));
 			vals.push_back(ins);
+			ins += smallDist(rng);
+			ins = ins > max ? max : ins;
 		}
 		size += odd;
 		size /= 2;
 		while (size-- > 0)
 		{
-			if (dist(rng) % 3 == 0)
-				ins = ins == min ? min : ins - (dist(rng) % (range / 10));
+			ins -= smallDist(rng);
+			ins = ins < min ? min : ins;
 			vals.push_back(ins);
 		}
 		break;
 	case StartShape::Jagged:
-		jags = 10;
-		range = max - min;
+		cnt = size / 10;
 		while (size > 0)
 		{
-			ins = min + (dist(rng) % (range / 10));
-			for (int i = 0; size > 0 && i < size / jags; ++i, --size)
+			ins = min + smallDist(rng);
+			for (int i = 0; size > 0 && i < cnt; ++i, --size)
 			{
 				vals.push_back(ins);
-				ins = ins == max ? max : ins + dist(rng) % (range / 20);
+				ins += smallDist(rng);
+				ins = ins > max ? max : ins;
 			}
 		}
 		break;

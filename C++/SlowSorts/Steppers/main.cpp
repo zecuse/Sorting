@@ -1,4 +1,5 @@
 #include <chrono>
+#include <numeric>
 #include <iostream>
 
 #include <Steppers/steppers.hpp>
@@ -6,42 +7,59 @@
 
 using namespace std;
 
+void getLoAvgHi(vector<int> stats, int &lo, float &avg, int &hi)
+{
+	lo = *ranges::min_element(stats);
+	hi = *ranges::max_element(stats);
+	avg = accumulate(next(stats.begin()), stats.end(), stats[0]) / static_cast<float>(stats.size());
+}
+
 void selectSort(Utilities::StartShape shape, int traits)
 {
-	bool bench = false, shortInfo = false;
+	bool bench = false, shortInfo = true;
+	int size = shortInfo ? 1000 : 30, min = -10000, max = 10000;
 	vector<int> vals{};
 	auto sortFunc = [&](auto sorter)
 	{
-		int runs = 100, curr = 0;
-		float shorts = 0.0f, comps = 0.0f, swaps = 0.0f;
-		auto times = chrono::duration<double, milli>(0);
+		int runs = 100, curr = 0, lo = INT_MAX, hi = INT_MIN;
+		float avg = 0.0f;
+		vector<int> shorts{}, comps{}, swaps{};
+		chrono::duration<double, milli> loT, hiT, avgT{ 0 };
+		vector<chrono::duration<double, milli>> times{};
 		do
 		{
 			if (curr != 0)
-				Utilities::Shuffle(vals);
+				Utilities::Create(vals, size, min, max, shape, traits);
 			auto start = chrono::high_resolution_clock::now();
 			auto [saved, cmps, swps] = sorter(vals);
 			auto end = chrono::high_resolution_clock::now();
 			auto time = chrono::duration<double, milli>(end - start);
-			shorts += saved;
-			comps += cmps;
-			swaps += swps;
-			times += time;
+			shorts.push_back(saved);
+			comps.push_back(cmps);
+			swaps.push_back(swps);
+			times.push_back(time);
 		} while (bench && ++curr != runs);
 		if (bench)
-		{
-			shorts /= runs;
-			comps /= runs;
-			swaps /= runs;
-			times /= runs;
 			cout << "Benchmark ran " << runs << " times." << endl;
+
+		if (shorts[0] > 0)
+		{
+			getLoAvgHi(shorts, lo, avg, hi);
+			cout << "Short circuit saved " << format("[{}, {:.3f}, {}]", lo, avg, hi) << " out of ";
+			cout << vals.size() << " runs." << endl;
 		}
-		if (shorts > 0)
-			cout << "Short circuit saved " << shorts << " out of " << vals.size() << " runs." << endl;
-		cout << "This algo made " << comps << " compares and performed " << swaps << " swaps." << endl;
-		cout << "Took " << times << endl;
+		getLoAvgHi(comps, lo, avg, hi);
+		cout << "This algo made " << format("[{}, {:.3f}, {}]", lo, avg, hi) << " compares and performed ";
+		getLoAvgHi(swaps, lo, avg, hi);
+		cout << format("[{}, {:.3f}, {}]", lo, avg, hi) << " swaps." << endl;
+
+		loT = *ranges::min_element(times);
+		hiT = *ranges::max_element(times);
+		for (auto &time : times)
+			avgT += time;
+		avgT /= static_cast<int>(times.size());
+		cout << "Took [" << loT << ", " << avgT << ", " << hiT << "]" << endl;
 	};
-	int size = shortInfo ? 1000 : 25, min = -10000, max = 10000;
 	Utilities::Create(vals, size, min, max, shape, traits);
 	if (shortInfo)
 		cout << size << " elements, [" << min << ", " << max << "]" << endl;
@@ -127,18 +145,18 @@ void options(Utilities::StartShape &shape, int &traits)
 			cout << "j. Jagged - Non-decreasing for a small portion, then reset and repeat.\n";
 			cout << "b. Back - Return.\n";
 			cout << "Current shape is: ";
-			switch (sha)
+			switch (shape)
 			{
-			case 'r':
+			case Utilities::StartShape::Random:
 				cout << "Random";
 				break;
-			case 's':
+			case Utilities::StartShape::Sorted:
 				cout << "Sorted";
 				break;
-			case 't':
+			case Utilities::StartShape::Triangle:
 				cout << "Triangle";
 				break;
-			case 'j':
+			case Utilities::StartShape::Jagged:
 				cout << "Jagged";
 				break;
 			}
