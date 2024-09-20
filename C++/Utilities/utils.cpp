@@ -42,6 +42,12 @@ void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape
 			ins += smallDist(rng);
 			ins = ins > max ? max : ins;
 		}
+		if ((traits & Traits::Inverted) == Traits::Inverted)
+		{
+			size = vals.size() - 1;
+			for (int i = 0; i < size / 2; ++i)
+				Utilities::Swap(vals, i, size - i);
+		}
 		break;
 	case StartShape::Triangle:
 		odd = size % 2;
@@ -60,6 +66,14 @@ void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape
 			ins = ins < min ? min : ins;
 			vals.push_back(ins);
 		}
+		if ((traits & Traits::Inverted) == Traits::Inverted)
+		{
+			size = vals.size() / 2 + odd;
+			for (int i = 0; i < size / 2; ++i)
+				Utilities::Swap(vals, i, size - i);
+			for (int i = size; i < size + size / 2; ++i)
+				Utilities::Swap(vals, i, vals.size() - 1 - i);
+		}
 		break;
 	case StartShape::Jagged:
 		cnt = size / 10;
@@ -72,6 +86,12 @@ void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape
 				ins += smallDist(rng);
 				ins = ins > max ? max : ins;
 			}
+		}
+		if ((traits & Traits::Inverted) == Traits::Inverted)
+		{
+			size = vals.size() - 1;
+			for (int i = 0; i < size / 2; ++i)
+				Utilities::Swap(vals, i, size - i);
 		}
 		break;
 	}
