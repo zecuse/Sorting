@@ -147,6 +147,28 @@ void Utilities::Create(vector<int> &vals, int size, int min, int max, StartShape
 		}
 		break;
 	}
+	if ((traits & Traits::Stairs) == Traits::Stairs)
+	{
+		int width = 6;
+		size = 0;
+		while (size < vals.size())
+		{
+			for (int i = 0; i + size < vals.size() && i < width; ++i)
+				vals[i + size] = vals[size];
+			size += width;
+		}
+	}
+	if ((traits & Traits::Fuzzy) == Traits::Fuzzy)
+	{
+		int sign, offset;
+		for (auto &val : vals)
+		{
+			sign = dist(rng);
+			sign /= abs(sign);
+			offset = 2 * sign * smallDist(rng);
+			val += offset;
+		}
+	}
 }
 
 void Utilities::Shuffle(vector<int> &vals)
