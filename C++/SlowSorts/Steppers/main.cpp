@@ -16,7 +16,7 @@ void getLoAvgHi(vector<int> stats, int &lo, float &avg, int &hi)
 
 void selectSort(Utilities::StartShape shape, int traits)
 {
-	bool bench = false, shortInfo = false;
+	bool bench = false, shortInfo = true;
 	int size = shortInfo ? 1000 : 30, min = shortInfo ? -10000 : 0, max = 10000;
 	vector<int> vals{};
 	auto sortFunc = [&](auto sorter)
