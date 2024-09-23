@@ -17,7 +17,7 @@ void getLoAvgHi(vector<int> stats, int &lo, float &avg, int &hi)
 void selectSort(Utilities::StartShape shape, int traits)
 {
 	bool bench = false, shortInfo = false;
-	int size = shortInfo ? 1000 : 30, min = -10000, max = 10000;
+	int size = shortInfo ? 1000 : 30, min = shortInfo ? -10000 : 0, max = 10000;
 	vector<int> vals{};
 	auto sortFunc = [&](auto sorter)
 	{
@@ -60,18 +60,21 @@ void selectSort(Utilities::StartShape shape, int traits)
 		avgT /= static_cast<int>(times.size());
 		cout << "Took [" << loT << ", " << avgT << ", " << hiT << "]" << endl;
 	};
-	Utilities::Create(vals, size, min, max, shape, traits);
-	if (shortInfo)
-		cout << size << " elements, [" << min << ", " << max << "]" << endl;
-	else
-	{
-		cout << "Before sort:\t";
-		Utilities::Print(vals);
-	}
 
 	char cont = 'y';
-	while (cont == 'y')
+	do
 	{
+		Utilities::Clear();
+		Utilities::Create(vals, size, min, max, shape, traits);
+		Utilities::PrintShapeTraits(shape, traits);
+		if (shortInfo)
+			cout << size << " elements, [" << min << ", " << max << "]" << endl;
+		else
+		{
+			cout << "Before sort:\t";
+			Utilities::PrintVals(vals);
+		}
+
 		bool ran = true;
 		char sort = ' ';
 		cout << "Select a sorting algorithm\n";
@@ -113,15 +116,13 @@ void selectSort(Utilities::StartShape shape, int traits)
 			if (!shortInfo)
 			{
 				cout << "After sort:\t";
-				Utilities::Print(vals);
+				Utilities::PrintVals(vals);
 			}
 		}
 
 		cout << "Perform another? [y/n]: ";
 		cin >> cont;
-		if (cont == 'y')
-			Utilities::Create(vals, size, min, max, shape, traits);
-	}
+	} while (cont == 'y');
 }
 
 void options(Utilities::StartShape &shape, int &traits)
@@ -226,6 +227,7 @@ void options(Utilities::StartShape &shape, int &traits)
 			}
 			break;
 		}
+		Utilities::Clear();
 	}
 }
 
@@ -248,9 +250,11 @@ int main()
 			selectSort(shape, traits);
 			break;
 		case 'o':
+			Utilities::Clear();
 			options(shape, traits);
 			break;
 		}
+		Utilities::Clear();
 	}
 	return 0;
 }

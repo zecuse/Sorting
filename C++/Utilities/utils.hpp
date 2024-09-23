@@ -16,7 +16,9 @@ namespace Utilities
 		Fuzzy = 1 << 1,
 		Stairs = 1 << 2,
 	};
-	void Print(std::vector<int> &vals);
+	void Clear();
+	void PrintShapeTraits(StartShape shape, int traits);
+	void PrintVals(std::vector<int> &vals);
 	void Create(std::vector<int> &vals, int size, int min, int max, StartShape start = StartShape::Random, int traits = Traits::None);
 	void Shuffle(std::vector<int> &vals);
 	void Swap(std::vector<int> &vals, int i, int j);

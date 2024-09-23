@@ -1,5 +1,11 @@
 #include <Utilities/utils.hpp>
 
+#if defined _WIN32
+#include <Windows.h>
+#elif defined __unix__
+#include <term.h>
+#endif
+
 #include <algorithm>
 #include <format>
 #include <iostream>
@@ -9,7 +15,53 @@
 
 using namespace std;
 
-void Utilities::Print(vector<int> &vals)
+void Utilities::Clear()
+{
+#if defined _WIN32
+	COORD topLeft = { 0, 0 };
+	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO screen;
+	DWORD cells;
+	DWORD written;
+
+	GetConsoleScreenBufferInfo(console, &screen);
+	cells = screen.dwSize.X * screen.dwSize.Y;
+	FillConsoleOutputCharacter(console, ' ', cells, topLeft, &written);
+	FillConsoleOutputAttribute(console, screen.wAttributes, cells, topLeft, &written);
+	SetConsoleCursorPosition(console, topLeft);
+#elif defined __unix__
+	setupterm(NULL, fileno(stdout), NULL);
+	putp(tigetstr("clear"));
+#endif
+}
+
+void Utilities::PrintShapeTraits(Utilities::StartShape shape, int traits)
+{
+	switch (shape)
+	{
+	case StartShape::Random:
+		cout << "Random";
+		break;
+	case StartShape::Sorted:
+		cout << "Sorted";
+		break;
+	case StartShape::Triangle:
+		cout << "Triangle";
+		break;
+	case StartShape::Jagged:
+		cout << "Jagged";
+		break;
+	}
+	if ((traits & Utilities::Traits::Inverted) == Utilities::Traits::Inverted)
+		cout << ", Inverted";
+	if ((traits & Utilities::Traits::Fuzzy) == Utilities::Traits::Fuzzy)
+		cout << ", Fuzzy";
+	if ((traits & Utilities::Traits::Stairs) == Utilities::Traits::Stairs)
+		cout << ", Stairs";
+	cout << endl;
+}
+
+void Utilities::PrintVals(vector<int> &vals)
 {
 	auto fold = [](string res, int val)
 	{
