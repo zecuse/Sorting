@@ -67,7 +67,7 @@ void selectSort(Utilities::StartShape shape, int traits)
 		for (auto &time : times)
 			avgT += time;
 		avgT /= static_cast<int>(times.size());
-		cout << format("Took [{}ms, {}ms, {}ms]", loT.count(), avgT.count(), hiT.count()) << endl;
+		cout << format("Took [{}ms, {:.4f}ms, {}ms]", loT.count(), avgT.count(), hiT.count()) << endl;
 	};
 
 	char cont = 'y';
@@ -85,43 +85,54 @@ void selectSort(Utilities::StartShape shape, int traits)
 		}
 
 		bool ran = true;
-		char sort = ' ';
+		char opt = ' ', sort = ' ';
+		int runs = 1;
 		cout << "Select a sorting algorithm\n";
 		cout << "1. Bubble\n";
 		cout << "2. Cocktail\n";
 		cout << "3. Gnome\n";
 		cout << "4. Comb\n";
 		cout << "b#. Benchmark\n";
-		cin >> sort;
+		cout << "c##. Compare\n";
+		cin >> opt;
 
-		if (sort == 'b')
+		if (opt == 'c')
+			++runs;
+		while (runs-- > 0)
 		{
-			bench = true;
-			cin >> sort;
-		}
-		switch (sort)
-		{
-		case '1':
-			sortFunc(Steppers::BubbleSort);
-			break;
-		case '2':
-			sortFunc(Steppers::CocktailSort);
-			break;
-		case '3':
-			sortFunc(Steppers::GnomeSort);
-			break;
-		case '4':
-			sortFunc(Steppers::CombSort);
-			break;
-		default:
-			cout << "Failed to select a valid sort." << endl;
-			ran = false;
-		}
-		if (ran && !shortInfo)
-		{
+			if (opt == 'b' || opt == 'c')
+			{
+				bench = true;
+				cin >> sort;
+			}
+			else
+				sort = opt;
+			switch (sort)
+			{
+			case '1':
+				sortFunc(Steppers::BubbleSort);
+				break;
+			case '2':
+				sortFunc(Steppers::CocktailSort);
+				break;
+			case '3':
+				sortFunc(Steppers::GnomeSort);
+				break;
+			case '4':
+				sortFunc(Steppers::CombSort);
+				break;
+			default:
+				cout << "Failed to select a valid sort." << endl;
+				ran = false;
+			}
+			if (ran && !shortInfo)
+			{
 				cout << "After sort:\t";
 				Utilities::PrintVals(vals);
 			}
+			if (runs == 1)
+				Utilities::Create(vals, size, min, max, shape, traits);
+		}
 
 		cout << "Perform another? [y/n]: ";
 		cin >> cont;
