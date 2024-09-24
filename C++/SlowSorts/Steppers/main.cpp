@@ -21,7 +21,7 @@ void selectSort(Utilities::StartShape shape, int traits)
 	vector<int> vals{};
 	auto sortFunc = [&](auto sorter)
 	{
-		int runs = 100, curr = 0, lo = INT_MAX, hi = INT_MIN;
+		int runs = 100, curr = 0, lo = INT_MAX, hi = INT_MIN, fails = 0, cnt = 0;
 		float avg = 0.0f;
 		vector<int> shorts{}, comps{}, swaps{};
 		chrono::duration<double, milli> loT, hiT, avgT{ 0 };
@@ -38,27 +38,36 @@ void selectSort(Utilities::StartShape shape, int traits)
 			comps.push_back(cmps);
 			swaps.push_back(swps);
 			times.push_back(time);
+
+			bool check = true;
+			int i = 0;
+			for (i = 0; check && i < vals.size() - 1; ++i)
+				if (vals[i] > vals[i + 1])
+					check = false;
+			if (!check && cnt++ == 0)
+				cout << format("Failed to sort!!! vals[{}] = {} > vals[{}] = {}", i - 1, vals[i - 1], i, vals[i]) << endl;
 		} while (bench && ++curr != runs);
+		if (cnt)
+			cout << format("There were {} failures!", cnt) << endl;
 		if (bench)
-			cout << "Benchmark ran " << runs << " times." << endl;
+			cout << format("Benchmark ran {} times.", runs) << endl;
 
 		if (shorts[0] > 0)
 		{
 			getLoAvgHi(shorts, lo, avg, hi);
-			cout << "Short circuit saved " << format("[{}, {:.3f}, {}]", lo, avg, hi) << " out of ";
-			cout << vals.size() << " runs." << endl;
+			cout << format("Short circuit saved [{}, {:.3f}, {}] out of {} runs.", lo, avg, hi, vals.size()) << endl;
 		}
 		getLoAvgHi(comps, lo, avg, hi);
-		cout << "This algo made " << format("[{}, {:.3f}, {}]", lo, avg, hi) << " compares and performed ";
+		cout << format("This algo made [{}, {:.3f}, {}] compares ", lo, avg, hi);
 		getLoAvgHi(swaps, lo, avg, hi);
-		cout << format("[{}, {:.3f}, {}]", lo, avg, hi) << " swaps." << endl;
+		cout << format("and performed [{}, {:.3f}, {}] swaps.", lo, avg, hi) << endl;
 
 		loT = *ranges::min_element(times);
 		hiT = *ranges::max_element(times);
 		for (auto &time : times)
 			avgT += time;
 		avgT /= static_cast<int>(times.size());
-		cout << "Took [" << loT << ", " << avgT << ", " << hiT << "]" << endl;
+		cout << format("Took [{}ms, {}ms, {}ms]", loT.count(), avgT.count(), hiT.count()) << endl;
 	};
 
 	char cont = 'y';
@@ -68,7 +77,7 @@ void selectSort(Utilities::StartShape shape, int traits)
 		Utilities::Create(vals, size, min, max, shape, traits);
 		Utilities::PrintShapeTraits(shape, traits);
 		if (shortInfo)
-			cout << size << " elements, [" << min << ", " << max << "]" << endl;
+			cout << format("{} elements, [{}, {}]", size, min, max) << endl;
 		else
 		{
 			cout << "Before sort:\t";
@@ -108,21 +117,11 @@ void selectSort(Utilities::StartShape shape, int traits)
 			cout << "Failed to select a valid sort." << endl;
 			ran = false;
 		}
-		if (ran)
+		if (ran && !shortInfo)
 		{
-			bool check = true;
-			int i;
-			for (i = 0; check && i < vals.size() - 1; ++i)
-				if (vals[i] > vals[i + 1])
-					check = false;
-			if (!check)
-				cout << "Failed to sort!!! " << vals[i - 1] << " > " << vals[i] << endl;
-			if (!shortInfo)
-			{
 				cout << "After sort:\t";
 				Utilities::PrintVals(vals);
 			}
-		}
 
 		cout << "Perform another? [y/n]: ";
 		cin >> cont;
@@ -132,6 +131,7 @@ void selectSort(Utilities::StartShape shape, int traits)
 void options(Utilities::StartShape &shape, int &traits)
 {
 	char sel = ' ', sha = 'r', tra = 'n';
+	string shapeSel;
 	while (sel != 'b')
 	{
 		cout << "These are the available options\n";
@@ -153,19 +153,19 @@ void options(Utilities::StartShape &shape, int &traits)
 			switch (shape)
 			{
 			case Utilities::StartShape::Random:
-				cout << "Random";
+				shapeSel = "Random";
 				break;
 			case Utilities::StartShape::Sorted:
-				cout << "Sorted";
+				shapeSel = "Sorted";
 				break;
 			case Utilities::StartShape::Triangle:
-				cout << "Triangle";
+				shapeSel = "Triangle";
 				break;
 			case Utilities::StartShape::Jagged:
-				cout << "Jagged";
+				shapeSel = "Jagged";
 				break;
 			}
-			cout << endl;
+			cout << shapeSel << endl;
 			cin >> sha;
 			switch (sha)
 			{
@@ -181,6 +181,8 @@ void options(Utilities::StartShape &shape, int &traits)
 			case 'j':
 				shape = Utilities::StartShape::Jagged;
 				break;
+			default:
+				cout << format("{} is an invalid selection. Reverting to {}.", sha, shapeSel) << endl;
 			}
 			break;
 		case 't':
@@ -226,7 +228,7 @@ void options(Utilities::StartShape &shape, int &traits)
 					traits &= ~Utilities::Traits::Stairs;
 					break;
 				default:
-					cout << tra << " is an invalid selection.\n";
+					cout << format("{} is an invalid selection.", tra) << endl;
 				}
 			}
 			break;

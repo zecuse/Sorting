@@ -65,7 +65,7 @@ void Utilities::PrintVals(vector<int> &vals)
 {
 	auto fold = [](string res, int val)
 	{
-		return move(res) + ", " + format("{: 5d}", val);
+		return format("{}, {: 5d}", move(res), val);
 	};
 	string print = accumulate(next(vals.begin()), vals.end(), format("{: 5d}", vals[0]), fold);
 	cout << print << endl;
