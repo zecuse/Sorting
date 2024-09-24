@@ -81,6 +81,7 @@ void selectSort(Utilities::StartShape shape, int traits)
 		cout << "1. Bubble\n";
 		cout << "2. Cocktail\n";
 		cout << "3. Gnome\n";
+		cout << "4. Comb\n";
 		cout << "b#. Benchmark\n";
 		cin >> sort;
 
@@ -99,6 +100,9 @@ void selectSort(Utilities::StartShape shape, int traits)
 			break;
 		case '3':
 			sortFunc(Steppers::GnomeSort);
+			break;
+		case '4':
+			sortFunc(Steppers::CombSort);
 			break;
 		default:
 			cout << "Failed to select a valid sort." << endl;

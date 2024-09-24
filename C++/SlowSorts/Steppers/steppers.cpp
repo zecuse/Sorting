@@ -92,3 +92,29 @@ tuple<int, int, int> Steppers::GnomeSort(vector<int> &vals)
 
 	return { -runs, cmps, swps };
 }
+
+tuple<int, int, int> Steppers::CombSort(vector<int> &vals)
+{
+	int runs = vals.size(), cmps = 0, swps = 0;
+	int gap = vals.size();
+	bool sorted = false;
+
+	while (!sorted || gap != 1)
+	{
+		sorted = true;
+		gap = gap == 1 ? 1 : gap >> 1;
+		for (int i = 0; i + gap < vals.size(); ++i)
+		{
+			if (vals[i] > vals[i + gap])
+			{
+				sorted = false;
+				Utilities::Swap(vals, i, i + gap);
+				++swps;
+			}
+			++cmps;
+		}
+		--runs;
+	}
+
+	return { runs, cmps, swps };
+}
