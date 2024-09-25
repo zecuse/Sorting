@@ -206,18 +206,29 @@ void Utilities::AuxMerger(vector<int> &vals, int lo, int mid, int hi)
 		vals[i + lo] = aux[i];
 }
 
-int Utilities::BinarySearch(vector<int> &vals, int key, int lo, int hi)
+int Utilities::BinarySearch(std::vector<int> &vals, int key, int lo, int hi)
+{
+	int cmps = 0;
+	return Utilities::BinarySearch(vals, key, lo, hi, cmps);
+}
+
+int Utilities::BinarySearch(vector<int> &vals, int key, int lo, int hi, int &cmps)
 {
 	int mid = -1;
 	while (lo <= hi)
 	{
 		mid = lo + ((hi - lo) >> 1);
 		if (vals[mid] == key)
+		{
+			++cmps;
 			return mid + 1;
+		}
 		if (vals[mid] < key)
 			lo = mid + 1;
 		else
 			hi = mid - 1;
+		++cmps;
 	}
+	++cmps;
 	return vals[mid] < key ? mid + 1 : mid;
 }
