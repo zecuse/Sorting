@@ -7,11 +7,63 @@
 
 using namespace std;
 
-void getLoAvgHi(vector<int> stats, int &lo, float &avg, int &hi)
+void getStats(vector<int> stats, int &lo, float &avg, int &hi)
 {
 	lo = *ranges::min_element(stats);
 	hi = *ranges::max_element(stats);
 	avg = accumulate(next(stats.begin()), stats.end(), stats[0]) / static_cast<float>(stats.size());
+}
+
+void doSort(tuple<int, int, int>(*sort)(vector<int>&), bool bench, vector<int> vals, int size, int min, int max, Utilities::StartShape shape, int traits)
+{
+	int runs = 100, curr = 0, lo = INT_MAX, hi = INT_MIN, fails = 0, cnt = 0;
+	float avg = 0.0f;
+	vector<int> shorts{}, comps{}, swaps{};
+	chrono::duration<double, milli> loT, hiT, avgT{ 0 };
+	vector<chrono::duration<double, milli>> times{};
+
+	do
+	{
+		if (curr != 0)
+			Utilities::Create(vals, size, min, max, shape, traits);
+		auto start = chrono::high_resolution_clock::now();
+		auto [saved, cmps, swps] = sort(vals);
+		auto end = chrono::high_resolution_clock::now();
+		auto time = chrono::duration<double, milli>(end - start);
+		shorts.push_back(saved);
+		comps.push_back(cmps);
+		swaps.push_back(swps);
+		times.push_back(time);
+
+		bool check = true;
+		int i = 0;
+		for (i = 0; check && i < vals.size() - 1; ++i)
+			if (vals[i] > vals[i + 1])
+				check = false;
+		if (!check && cnt++ == 0)
+			cout << format("Failed to sort!!! vals[{}] = {} > vals[{}] = {}", i - 1, vals[i - 1], i, vals[i]) << endl;
+	} while (bench && ++curr != runs);
+	if (cnt > 0)
+		cout << format("There were {} failures!", cnt) << endl;
+	if (bench)
+		cout << format("Benchmark ran {} times.", runs) << endl;
+
+	if (shorts[0] > 0)
+	{
+		getStats(shorts, lo, avg, hi);
+		cout << format("Short circuit saved [{}, {:.3f}, {}] out of {} runs.", lo, avg, hi, vals.size()) << endl;
+	}
+	getStats(comps, lo, avg, hi);
+	cout << format("This algo made [{}, {:.3f}, {}] compares ", lo, avg, hi);
+	getStats(swaps, lo, avg, hi);
+	cout << format("and performed [{}, {:.3f}, {}] swaps.", lo, avg, hi) << endl;
+
+	loT = *ranges::min_element(times);
+	hiT = *ranges::max_element(times);
+	for (auto &time : times)
+		avgT += time;
+	avgT /= static_cast<int>(times.size());
+	cout << format("Took [{}ms, {:.4f}ms, {}ms]", loT.count(), avgT.count(), hiT.count()) << endl;
 }
 
 void selectSort(Utilities::StartShape shape, int traits)
@@ -19,58 +71,8 @@ void selectSort(Utilities::StartShape shape, int traits)
 	bool bench = false, shortInfo = true;
 	int size = shortInfo ? 1000 : 30, min = shortInfo ? -10000 : 0, max = 10000;
 	vector<int> vals{};
-	auto sortFunc = [&](auto sorter)
-	{
-		int runs = 100, curr = 0, lo = INT_MAX, hi = INT_MIN, fails = 0, cnt = 0;
-		float avg = 0.0f;
-		vector<int> shorts{}, comps{}, swaps{};
-		chrono::duration<double, milli> loT, hiT, avgT{ 0 };
-		vector<chrono::duration<double, milli>> times{};
-		do
-		{
-			if (curr != 0)
-				Utilities::Create(vals, size, min, max, shape, traits);
-			auto start = chrono::high_resolution_clock::now();
-			auto [saved, cmps, swps] = sorter(vals);
-			auto end = chrono::high_resolution_clock::now();
-			auto time = chrono::duration<double, milli>(end - start);
-			shorts.push_back(saved);
-			comps.push_back(cmps);
-			swaps.push_back(swps);
-			times.push_back(time);
-
-			bool check = true;
-			int i = 0;
-			for (i = 0; check && i < vals.size() - 1; ++i)
-				if (vals[i] > vals[i + 1])
-					check = false;
-			if (!check && cnt++ == 0)
-				cout << format("Failed to sort!!! vals[{}] = {} > vals[{}] = {}", i - 1, vals[i - 1], i, vals[i]) << endl;
-		} while (bench && ++curr != runs);
-		if (cnt)
-			cout << format("There were {} failures!", cnt) << endl;
-		if (bench)
-			cout << format("Benchmark ran {} times.", runs) << endl;
-
-		if (shorts[0] > 0)
-		{
-			getLoAvgHi(shorts, lo, avg, hi);
-			cout << format("Short circuit saved [{}, {:.3f}, {}] out of {} runs.", lo, avg, hi, vals.size()) << endl;
-		}
-		getLoAvgHi(comps, lo, avg, hi);
-		cout << format("This algo made [{}, {:.3f}, {}] compares ", lo, avg, hi);
-		getLoAvgHi(swaps, lo, avg, hi);
-		cout << format("and performed [{}, {:.3f}, {}] swaps.", lo, avg, hi) << endl;
-
-		loT = *ranges::min_element(times);
-		hiT = *ranges::max_element(times);
-		for (auto &time : times)
-			avgT += time;
-		avgT /= static_cast<int>(times.size());
-		cout << format("Took [{}ms, {:.4f}ms, {}ms]", loT.count(), avgT.count(), hiT.count()) << endl;
-	};
-
 	char cont = 'y';
+
 	do
 	{
 		Utilities::Clear();
@@ -110,16 +112,16 @@ void selectSort(Utilities::StartShape shape, int traits)
 			switch (sort)
 			{
 			case '1':
-				sortFunc(Steppers::BubbleSort);
+				doSort(Steppers::BubbleSort, bench, vals, size, min, max, shape, traits);
 				break;
 			case '2':
-				sortFunc(Steppers::CocktailSort);
+				doSort(Steppers::CocktailSort, bench, vals, size, min, max, shape, traits);
 				break;
 			case '3':
-				sortFunc(Steppers::GnomeSort);
+				doSort(Steppers::GnomeSort, bench, vals, size, min, max, shape, traits);
 				break;
 			case '4':
-				sortFunc(Steppers::CombSort);
+				doSort(Steppers::CombSort, bench, vals, size, min, max, shape, traits);
 				break;
 			default:
 				cout << "Failed to select a valid sort." << endl;
@@ -271,7 +273,8 @@ int main()
 			options(shape, traits);
 			break;
 		}
-		Utilities::Clear();
+		if (sel != 'q')
+			Utilities::Clear();
 	}
 	return 0;
 }
