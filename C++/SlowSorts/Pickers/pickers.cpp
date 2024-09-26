@@ -1,6 +1,8 @@
 #include <Pickers/pickers.hpp>
 #include <Utilities/utils.hpp>
 
+#include <iostream>
+
 using namespace std;
 
 tuple<int, int> Pickers::SelectionSort(vector<int> &vals)
@@ -13,18 +15,6 @@ tuple<int, int> Pickers::SelectionSort(vector<int> &vals)
 		if (base != min)
 			Utilities::Swap(vals, base, min, swps);
 		++cmps;
-	}
-	return { cmps, swps };
-}
-
-tuple<int, int> Pickers::InsertionSort(vector<int> &vals)
-{
-	int runs = vals.size(), cmps = 0, swps = 0;
-	for (int i = 1; i < runs; ++i)
-	{
-		int idx = Utilities::BinarySearch(vals, vals[i], 0, i - 1, cmps);
-		for (int j = i - 1; j >= idx && vals[j] != vals[j + 1]; --j)
-			Utilities::Swap(vals, j, j + 1, swps);
 	}
 	return { cmps, swps };
 }
@@ -44,6 +34,64 @@ tuple<int, int> Pickers::PancakeSort(vector<int> &vals)
 			Utilities::Flip(vals, 0, top, swps);
 		}
 		++cmps;
+	}
+	return { cmps, swps };
+}
+
+tuple<int, int> Pickers::InsertionSort(vector<int> &vals)
+{
+	int runs = vals.size(), cmps = 0, swps = 0;
+	for (int i = 1; i < runs; ++i)
+	{
+		int idx = Utilities::BinarySearch(vals, vals[i], 0, i - 1, cmps);
+		for (int j = i - 1; j >= idx && vals[j] != vals[j + 1]; --j)
+			Utilities::Swap(vals, j, j + 1, swps);
+	}
+	return { cmps, swps };
+}
+
+// OEIS sequence A102549 (finite)
+tuple<int, int> Pickers::ShellSortSimple(vector<int> &vals)
+{
+	vector<int> gaps{ 1750, 701, 301, 132, 57, 23, 10, 4, 1 };
+	return ShellSort(vals, gaps);
+}
+
+// OEIS sequence A366726 (infinite)
+tuple<int, int> Pickers::ShellSortGamma(vector<int> &vals)
+{
+	vector<int> gaps{};
+	int ins = 1;
+	float gamma = 2.243609061420001, power = gamma;
+	while (ins < vals.size())
+	{
+		gaps.insert(gaps.begin(), ins);
+		power *= gamma;
+		ins = ceil((power - 1) / (gamma - 1));
+	}
+	return ShellSort(vals, gaps);
+}
+
+tuple<int, int> Pickers::ShellSort(vector<int> &vals, vector<int> &gaps)
+{
+	cout << "The following gaps were used for the shells:" << endl;
+	Utilities::PrintVals(gaps);
+
+	int runs = vals.size(), cmps = 0, swps = 0;
+	for (int gap : gaps)
+	{
+		for (int i = gap; i < runs; ++i)
+		{
+			int min = vals[i], prev;
+			for (prev = i; prev >= gap && vals[prev - gap] > min; prev -= gap)
+			{
+				++cmps;
+				vals[prev] = vals[prev - gap];
+				++swps;
+			}
+			vals[prev] = min;
+			++swps;
+		}
 	}
 	return { cmps, swps };
 }

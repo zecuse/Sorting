@@ -85,8 +85,10 @@ void selectSort(Utilities::StartShape shape, int traits)
 		int runs = 1;
 		cout << "Select a sorting algorithm\n";
 		cout << "1. Selection\n";
-		cout << "2. Insertion\n";
-		cout << "3. Pancake\n";
+		cout << "2. Pancake\n";
+		cout << "3. Insertion\n";
+		cout << "4. Shell OEIS Sequence A102549: 1, 4, 10, 23, 57, 132, 301, 701, 1750\n";
+		cout << "5. Shell OEIS Sequence A366726: 1, 4,  9, 20, 45, 102, 230, 516, 1158...\n";
 		cout << "b#. Benchmark\n";
 		cout << "c##. Compare\n";
 		cin >> opt;
@@ -108,10 +110,16 @@ void selectSort(Utilities::StartShape shape, int traits)
 				doSort(Pickers::SelectionSort, bench, vals, size, min, max, shape, traits);
 				break;
 			case '2':
-				doSort(Pickers::InsertionSort, bench, vals, size, min, max, shape, traits);
+				doSort(Pickers::PancakeSort, bench, vals, size, min, max, shape, traits);
 				break;
 			case '3':
-				doSort(Pickers::PancakeSort, bench, vals, size, min, max, shape, traits);
+				doSort(Pickers::InsertionSort, bench, vals, size, min, max, shape, traits);
+				break;
+			case '4':
+				doSort(Pickers::ShellSortSimple, bench, vals, size, min, max, shape, traits);
+				break;
+			case '5':
+				doSort(Pickers::ShellSortGamma, bench, vals, size, min, max, shape, traits);
 				break;
 			default:
 				cout << "Failed to select a valid sort." << endl;
