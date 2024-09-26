@@ -16,8 +16,7 @@ tuple<int, int, int> Steppers::BubbleSort(vector<int> &vals)
 			if (vals[i] > vals[i + 1])
 			{
 				sorted = false;
-				Utilities::Swap(vals, i, i + 1);
-				++swps;
+				Utilities::Swap(vals, i, i + 1, swps);
 			}
 			++cmps;
 		}
@@ -41,8 +40,7 @@ tuple<int, int, int> Steppers::CocktailSort(vector<int> &vals)
 			if (vals[i] > vals[i + 1])
 			{
 				sorted = false;
-				Utilities::Swap(vals, i, i + 1);
-				++swps;
+				Utilities::Swap(vals, i, i + 1, swps);
 			}
 			++cmps;
 		}
@@ -56,8 +54,7 @@ tuple<int, int, int> Steppers::CocktailSort(vector<int> &vals)
 			if (vals[i - 1] > vals[i])
 			{
 				sorted = false;
-				Utilities::Swap(vals, i, i - 1);
-				++swps;
+				Utilities::Swap(vals, i, i - 1, swps);
 			}
 			++cmps;
 		}
@@ -75,14 +72,11 @@ tuple<int, int, int> Steppers::GnomeSort(vector<int> &vals)
 	while (i < runs)
 	{
 		if (i == 0)
-		{
 			++i;
-			++cmps;
-		}
+		++cmps;
 		if (vals[i] < vals[i - 1])
 		{
-			Utilities::Swap(vals, i, i - 1);
-			++swps;
+			Utilities::Swap(vals, i, i - 1, swps);
 			--i;
 		}
 		else
@@ -108,8 +102,7 @@ tuple<int, int, int> Steppers::CombSort(vector<int> &vals)
 			if (vals[i] > vals[i + gap])
 			{
 				sorted = false;
-				Utilities::Swap(vals, i, i + gap);
-				++swps;
+				Utilities::Swap(vals, i, i + gap, swps);
 			}
 			++cmps;
 		}
