@@ -180,13 +180,47 @@ void Utilities::Shuffle(vector<int> &vals)
 
 void Utilities::Swap(vector<int> &vals, int i, int j)
 {
+	int swps = 0;
+	Utilities::Swap(vals, i, j, swps);
+}
+
+void Utilities::Swap(vector<int> &vals, int i, int j, int &swps)
+{
 	swap(vals[i], vals[j]);
+	++swps;
+}
+
+int Utilities::FindExtreme(vector<int> &vals, int lo, int hi, bool (*op)(int a, int b))
+{
+	int cmps = 0;
+	return Utilities::FindExtreme(vals, lo, hi, op, cmps);
+}
+
+int Utilities::FindExtreme(vector<int> &vals, int lo, int hi, bool (*op)(int a, int b), int &cmps)
+{
+	int extreme = lo;
+	for (int i = lo + 1; i <= hi; ++i)
+	{
+		if (op(vals[i], vals[extreme]))
+			extreme = i;
+		++cmps;
+	}
+	return extreme;
 }
 
 void Utilities::Flip(vector<int> &vals, int lo, int hi)
 {
+	int swps = 0;
+	Utilities::Flip(vals, lo, hi, swps);
+}
+
+void Utilities::Flip(vector<int> &vals, int lo, int hi, int &swps)
+{
 	while (lo < hi)
+	{
 		swap(vals[lo++], vals[hi--]);
+		++swps;
+	}
 }
 
 void Utilities::AuxMerger(vector<int> &vals, int lo, int mid, int hi)
