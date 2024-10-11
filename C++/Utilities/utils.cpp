@@ -225,6 +225,12 @@ void Utilities::Flip(vector<int> &vals, int lo, int hi, int &swps)
 
 void Utilities::AuxMerger(vector<int> &vals, int lo, int mid, int hi)
 {
+	int cmps = 0, swps = 0;
+	Utilities::AuxMerger(vals, lo, mid, hi, cmps, swps);
+}
+
+void Utilities::AuxMerger(vector<int> &vals, int lo, int mid, int hi, int &cmps, int &swps)
+{
 	int left = lo, right = mid + 1, tmp = 0;
 	vector<int> aux(hi - lo + 1);
 	while (left <= mid && right <= hi)
@@ -233,14 +239,22 @@ void Utilities::AuxMerger(vector<int> &vals, int lo, int mid, int hi)
 			aux[tmp++] = vals[left++];
 		else
 			aux[tmp++] = vals[right++];
+		++cmps;
+		++swps;
 	}
 	while (left <= mid)
+	{
 		aux[tmp++] = vals[left++];
+		++swps;
+	}
 	for (int i = 0; i < tmp; ++i)
+	{
 		vals[i + lo] = aux[i];
+		++swps;
+	}
 }
 
-int Utilities::BinarySearch(std::vector<int> &vals, int key, int lo, int hi)
+int Utilities::BinarySearch(vector<int> &vals, int key, int lo, int hi)
 {
 	int cmps = 0;
 	return Utilities::BinarySearch(vals, key, lo, hi, cmps);

@@ -28,6 +28,7 @@ namespace Utilities
 	void Flip(std::vector<int> &vals, int lo, int hi);
 	void Flip(std::vector<int> &vals, int lo, int hi, int &swps);
 	void AuxMerger(std::vector<int> &vals, int lo, int mid, int hi);
+	void AuxMerger(std::vector<int> &vals, int lo, int mid, int hi, int &cmps, int &swps);
 	int BinarySearch(std::vector<int> &vals, int key, int lo, int hi);
 	int BinarySearch(std::vector<int> &vals, int key, int lo, int hi, int &cmps);
 }

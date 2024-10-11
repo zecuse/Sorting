@@ -84,7 +84,8 @@ void selectSort(Utilities::StartShape shape, int traits)
 		char opt = ' ', sort = ' ';
 		int runs = 1;
 		cout << "Select a sorting algorithm\n";
-		cout << "1. Merge\n";
+		cout << "1. Recursive Merge\n";
+		cout << "2. Iterative Merge\n";
 		cout << "b#. Benchmark\n";
 		cout << "c##. Compare\n";
 		cin >> opt;
@@ -103,7 +104,10 @@ void selectSort(Utilities::StartShape shape, int traits)
 			switch (sort)
 			{
 			case '1':
-				doSort(Comparors::Merge, bench, vals, size, min, max, shape, traits);
+				doSort(Comparors::RecMerge, bench, vals, size, min, max, shape, traits);
+				break;
+			case '2':
+				doSort(Comparors::ItMerge, bench, vals, size, min, max, shape, traits);
 				break;
 			default:
 				cout << "Failed to select a valid sort." << endl;
