@@ -5,7 +5,7 @@
 
 using namespace std;
 
-tuple<int, int> Pickers::SelectionSort(vector<int> &vals)
+tuple<int, int> Pickers::SelectionSort(vector<int> &vals, bool auxInfo)
 {
 	int runs = vals.size() - 1, cmps = 0, swps = 0;
 	auto findMin = [](int a, int b) { return a < b; };
@@ -19,7 +19,7 @@ tuple<int, int> Pickers::SelectionSort(vector<int> &vals)
 	return { cmps, swps };
 }
 
-tuple<int, int> Pickers::PancakeSort(vector<int> &vals)
+tuple<int, int> Pickers::PancakeSort(vector<int> &vals, bool auxInfo)
 {
 	int runs = vals.size() - 1, cmps = 0, swps = 0;
 	auto findMax = [](int a, int b) { return a > b; };
@@ -38,7 +38,7 @@ tuple<int, int> Pickers::PancakeSort(vector<int> &vals)
 	return { cmps, swps };
 }
 
-tuple<int, int> Pickers::InsertionSort(vector<int> &vals)
+tuple<int, int> Pickers::InsertionSort(vector<int> &vals, bool auxInfo)
 {
 	int runs = vals.size(), cmps = 0, swps = 0;
 	for (int i = 1; i < runs; ++i)
@@ -51,14 +51,14 @@ tuple<int, int> Pickers::InsertionSort(vector<int> &vals)
 }
 
 // OEIS sequence A102549 (finite)
-tuple<int, int> Pickers::ShellSortSimple(vector<int> &vals)
+tuple<int, int> Pickers::ShellSortSimple(vector<int> &vals, bool auxInfo)
 {
 	vector<int> gaps{ 1750, 701, 301, 132, 57, 23, 10, 4, 1 };
-	return ShellSort(vals, gaps);
+	return ShellSort(vals, gaps, auxInfo);
 }
 
 // OEIS sequence A366726 (infinite)
-tuple<int, int> Pickers::ShellSortGamma(vector<int> &vals)
+tuple<int, int> Pickers::ShellSortGamma(vector<int> &vals, bool auxInfo)
 {
 	vector<int> gaps{};
 	int ins = 1;
@@ -69,28 +69,28 @@ tuple<int, int> Pickers::ShellSortGamma(vector<int> &vals)
 		power *= gamma;
 		ins = ceil((power - 1) / (gamma - 1));
 	}
-	return ShellSort(vals, gaps);
+	return ShellSort(vals, gaps, auxInfo);
 }
 
-tuple<int, int> Pickers::ShellSort(vector<int> &vals, vector<int> &gaps)
+tuple<int, int> Pickers::ShellSort(vector<int> &vals, vector<int> &gaps, bool auxInfo)
 {
-	cout << "The following gaps were used for the shells:" << endl;
-	Utilities::PrintVals(gaps);
+	if (auxInfo)
+	{
+		cout << "The following gaps were used for the shells:" << endl;
+		Utilities::PrintVals(gaps);
+	}
 
 	int runs = vals.size(), cmps = 0, swps = 0;
 	for (int gap : gaps)
 	{
 		for (int i = gap; i < runs; ++i)
 		{
-			int min = vals[i], prev;
-			for (prev = i; prev >= gap && vals[prev - gap] > min; prev -= gap)
+			for (int min = i; min >= gap && vals[min - gap] > vals[min]; min -= gap)
 			{
 				++cmps;
-				vals[prev] = vals[prev - gap];
-				++swps;
+				Utilities::Swap(vals, min, min - gap, swps);
 			}
-			vals[prev] = min;
-			++swps;
+			++cmps;
 		}
 	}
 	return { cmps, swps };

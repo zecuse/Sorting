@@ -14,7 +14,7 @@ void getStats(vector<int> stats, int &lo, float &avg, int &hi)
 	avg = accumulate(next(stats.begin()), stats.end(), stats[0]) / static_cast<float>(stats.size());
 }
 
-void doSort(tuple<int, int>(*sort)(vector<int>&), bool bench, vector<int> vals, int size, int min, int max, Utilities::StartShape shape, int traits)
+void doSort(tuple<int, int>(*sort)(vector<int>&, bool), bool bench, vector<int> vals, int size, int min, int max, Utilities::StartShape shape, int traits)
 {
 	int runs = 100, curr = 0, lo = INT_MAX, hi = INT_MIN, fails = 0, cnt = 0;
 	float avg = 0.0f;
@@ -27,7 +27,7 @@ void doSort(tuple<int, int>(*sort)(vector<int>&), bool bench, vector<int> vals, 
 		if (curr != 0)
 			Utilities::Create(vals, size, min, max, shape, traits);
 		auto start = chrono::high_resolution_clock::now();
-		auto [cmps, swps] = sort(vals);
+		auto [cmps, swps] = sort(vals, curr == 0);
 		auto end = chrono::high_resolution_clock::now();
 		auto time = chrono::duration<double, milli>(end - start);
 		comps.push_back(cmps);
