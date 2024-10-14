@@ -8,7 +8,7 @@ using namespace std;
 tuple<int, int> Comparors::RecMerge(vector<int> &vals, bool auxInfo)
 {
 	int cmps = 0, swps = 0;
-	return RecMerger(vals, 0, vals.size(), cmps, swps);
+	return RecMerger(vals, 0, vals.size() - 1, cmps, swps);
 }
 
 tuple<int, int> Comparors::RecMerger(vector<int> &vals, int lo, int hi, int &cmps, int &swps)

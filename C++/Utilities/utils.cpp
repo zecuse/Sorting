@@ -223,6 +223,33 @@ void Utilities::Flip(vector<int> &vals, int lo, int hi, int &swps)
 	}
 }
 
+int Utilities::BinarySearch(vector<int> &vals, int key, int lo, int hi)
+{
+	int cmps = 0;
+	return Utilities::BinarySearch(vals, key, lo, hi, cmps);
+}
+
+int Utilities::BinarySearch(vector<int> &vals, int key, int lo, int hi, int &cmps)
+{
+	int mid = -1;
+	while (lo <= hi)
+	{
+		mid = lo + ((hi - lo) >> 1);
+		if (vals[mid] == key)
+		{
+			++cmps;
+			return mid + 1;
+		}
+		if (vals[mid] < key)
+			lo = mid + 1;
+		else
+			hi = mid - 1;
+		++cmps;
+	}
+	++cmps;
+	return vals[mid] < key ? mid + 1 : mid;
+}
+
 void Utilities::AuxMerger(vector<int> &vals, int lo, int mid, int hi)
 {
 	int cmps = 0, swps = 0;
@@ -254,29 +281,20 @@ void Utilities::AuxMerger(vector<int> &vals, int lo, int mid, int hi, int &cmps,
 	}
 }
 
-int Utilities::BinarySearch(vector<int> &vals, int key, int lo, int hi)
+int Utilities::Partition(vector<int> &vals, int lo, int hi)
 {
-	int cmps = 0;
-	return Utilities::BinarySearch(vals, key, lo, hi, cmps);
+	int cmps = 0, swps = 0;
+	return Utilities::Partition(vals, lo, hi, cmps, swps);
 }
 
-int Utilities::BinarySearch(vector<int> &vals, int key, int lo, int hi, int &cmps)
+int Utilities::Partition(vector<int> &vals, int lo, int hi, int &cmps, int &swps)
 {
-	int mid = -1;
-	while (lo <= hi)
+	int left = lo, p = vals[lo];
+	for (int right = left + 1; right <= hi; ++right)
 	{
-		mid = lo + ((hi - lo) >> 1);
-		if (vals[mid] == key)
-		{
-			++cmps;
-			return mid + 1;
-		}
-		if (vals[mid] < key)
-			lo = mid + 1;
-		else
-			hi = mid - 1;
-		++cmps;
+		if (vals[right] < p)
+			Utilities::Swap(vals, ++left, right, swps);
+		Utilities::Swap(vals, ++left, lo, swps);
 	}
-	++cmps;
-	return vals[mid] < key ? mid + 1 : mid;
+	return left;
 }

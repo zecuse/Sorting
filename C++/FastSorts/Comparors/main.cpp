@@ -63,7 +63,7 @@ void doSort(tuple<int, int>(*sort)(vector<int>&, bool), bool bench, vector<int> 
 void selectSort(Utilities::StartShape shape, int traits)
 {
 	bool bench = false, shortInfo = true;
-	int size = shortInfo ? 1000 : 30, min = shortInfo ? -10000 : 0, max = 10000;
+	int size = shortInfo ? 100000 : 30, min = shortInfo ? -1000000 : 0, max = 1000000;
 	vector<int> vals{};
 	char cont = 'y';
 
