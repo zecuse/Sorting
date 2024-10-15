@@ -294,7 +294,8 @@ int Utilities::Partition(vector<int> &vals, int lo, int hi, int &cmps, int &swps
 	{
 		if (vals[right] < p)
 			Utilities::Swap(vals, ++left, right, swps);
-		Utilities::Swap(vals, ++left, lo, swps);
+		++cmps;
 	}
+	Utilities::Swap(vals, left, lo, swps);
 	return left;
 }

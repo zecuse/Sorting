@@ -54,7 +54,7 @@ tuple<int, int> Pickers::InsertionSort(vector<int> &vals, bool auxInfo)
 tuple<int, int> Pickers::ShellSortSimple(vector<int> &vals, bool auxInfo)
 {
 	vector<int> gaps{ 1750, 701, 301, 132, 57, 23, 10, 4, 1 };
-	return ShellSort(vals, gaps, auxInfo);
+	return Pickers::ShellSort(vals, gaps, auxInfo);
 }
 
 // OEIS sequence A366726 (infinite)
@@ -69,7 +69,7 @@ tuple<int, int> Pickers::ShellSortGamma(vector<int> &vals, bool auxInfo)
 		power *= gamma;
 		ins = ceil((power - 1) / (gamma - 1));
 	}
-	return ShellSort(vals, gaps, auxInfo);
+	return Pickers::ShellSort(vals, gaps, auxInfo);
 }
 
 tuple<int, int> Pickers::ShellSort(vector<int> &vals, vector<int> &gaps, bool auxInfo)
